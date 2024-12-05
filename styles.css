@@ -149,3 +149,23 @@ td:first-child {
     padding: 8px;
   }
 }
+/* Scheme Name Styling */
+tr td:first-child {
+  background-color: white !important;
+  color: black !important;
+  font-weight: bold;
+}
+
+/* Default Table Row Styling */
+tr {
+  transition: background-color 0.3s ease;
+}
+
+/* Footer Styling */
+footer {
+  text-align: center;
+  padding: 15px 0;
+  background-color: #f1f1f1;
+  font-size: 0.9rem;
+}
+
