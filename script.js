@@ -139,4 +139,68 @@ async function updateTable() {
 
   tbody.innerHTML = rowsHTML; // Add the rows to the table
 }
+// Function to calculate color based on average return
+function getOverallReturnColor(averageReturn) {
+  if (averageReturn >= 15) {
+    return '#4CAF50'; // Green for high returns
+  } else if (averageReturn >= 5) {
+    return '#8BC34A'; // Light green
+  } else {
+    return '#FFC107'; // Yellow for moderate to low returns
+  }
+}
+
+// Function to update the table based on the selected month
+async function updateTable() {
+  const selectedMonth = document.getElementById('month').value;
+  const tbody = document.getElementById('data-body');
+  tbody.innerHTML = ''; // Clear existing data
+
+  const data = await fetchCSVData();
+  if (!data) return;
+
+  // Filter data by selected month
+  const filteredData = data.filter(row => row.month === selectedMonth);
+
+  let rowsHTML = '';
+  filteredData.forEach(row => {
+    const schemeReturns = [
+      parseFloat(row.sip_1) || 0,
+      parseFloat(row.sip_12) || 0,
+      parseFloat(row.sip_24) || 0,
+      parseFloat(row.sip_60) || 0,
+      parseFloat(row.lumpsum_1) || 0,
+      parseFloat(row.lumpsum_12) || 0,
+      parseFloat(row.lumpsum_24) || 0,
+      parseFloat(row.lumpsum_60) || 0,
+    ];
+
+    // Calculate average return for the scheme
+    const averageReturn = schemeReturns.reduce((a, b) => a + b, 0) / schemeReturns.length;
+
+    // Determine row color based on average return
+    const rowColor = getOverallReturnColor(averageReturn);
+
+    // Add row for the scheme with unified color for all returns
+    rowsHTML += `
+      <tr style="background-color: white; color: black; font-weight: bold;">
+        <td>${row.scheme_name || 'N/A'}</td>
+        <td colspan="8"></td>
+      </tr>
+      <tr style="background-color: ${rowColor}; color: black;">
+        <td>${row.sip_1 || 'N/A'}</td>
+        <td>${row.sip_12 || 'N/A'}</td>
+        <td>${row.sip_24 || 'N/A'}</td>
+        <td>${row.sip_60 || 'N/A'}</td>
+        <td>${row.lumpsum_1 || 'N/A'}</td>
+        <td>${row.lumpsum_12 || 'N/A'}</td>
+        <td>${row.lumpsum_24 || 'N/A'}</td>
+        <td>${row.lumpsum_60 || 'N/A'}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = rowsHTML; // Populate the table
+}
+
 
