@@ -79,3 +79,64 @@ document.getElementById('month').addEventListener('change', () => {
   saveSelectedMonth();  // Save the selected month
   updateTable();        // Update the table with the new month
 });
+// Function to calculate color based on returns (higher returns = greener)
+function getReturnColor(value) {
+  const returnValue = parseFloat(value);
+
+  if (isNaN(returnValue)) return ''; // If it's not a number, return nothing
+
+  // Map the return values to a color range (Green for positive, Red for negative)
+  if (returnValue >= 15) {
+    return '#4CAF50'; // Green for high returns
+  } else if (returnValue >= 5) {
+    return '#8BC34A'; // Light green
+  } else if (returnValue >= 0) {
+    return '#FFC107'; // Yellow for moderate returns
+  } else {
+    return '#F44336'; // Red for negative returns
+  }
+}
+
+// Update the table rows dynamically based on returns
+async function updateTable() {
+  const selectedMonth = document.getElementById('month').value;
+  const tbody = document.getElementById('data-body');
+  tbody.innerHTML = ''; // Clear existing data
+
+  const data = await fetchCSVData();
+  
+  if (!data) return;
+
+  // Filter data by selected month
+  const filteredData = data.filter(row => row.month === selectedMonth);
+
+  let rowsHTML = '';
+  filteredData.forEach(row => {
+    // Color rows based on returns
+    const sip1Color = getReturnColor(row.sip_1);
+    const sip12Color = getReturnColor(row.sip_12);
+    const sip24Color = getReturnColor(row.sip_24);
+    const sip60Color = getReturnColor(row.sip_60);
+    const lumpsum1Color = getReturnColor(row.lumpsum_1);
+    const lumpsum12Color = getReturnColor(row.lumpsum_12);
+    const lumpsum24Color = getReturnColor(row.lumpsum_24);
+    const lumpsum60Color = getReturnColor(row.lumpsum_60);
+
+    rowsHTML += `
+      <tr class="scheme-row" style="background-color: ${sip1Color}">
+        <td>${row.scheme_name || 'N/A'}</td>
+        <td style="background-color: ${sip1Color}">${row.sip_1 || 'N/A'}</td>
+        <td style="background-color: ${sip12Color}">${row.sip_12 || 'N/A'}</td>
+        <td style="background-color: ${sip24Color}">${row.sip_24 || 'N/A'}</td>
+        <td style="background-color: ${sip60Color}">${row.sip_60 || 'N/A'}</td>
+        <td style="background-color: ${lumpsum1Color}">${row.lumpsum_1 || 'N/A'}</td>
+        <td style="background-color: ${lumpsum12Color}">${row.lumpsum_12 || 'N/A'}</td>
+        <td style="background-color: ${lumpsum24Color}">${row.lumpsum_24 || 'N/A'}</td>
+        <td style="background-color: ${lumpsum60Color}">${row.lumpsum_60 || 'N/A'}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = rowsHTML; // Add the rows to the table
+}
+
