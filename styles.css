@@ -96,18 +96,6 @@ tr.scheme-row {
   transition: background-color 0.5s ease;
 }
 
-/* Apply color gradients to return values (Green = good, Red = bad) */
-.scheme-row.sip-1,
-.scheme-row.sip-12,
-.scheme-row.sip-24,
-.scheme-row.sip-60,
-.scheme-row.lumpsum-1,
-.scheme-row.lumpsum-12,
-.scheme-row.lumpsum-24,
-.scheme-row.lumpsum-60 {
-  background-color: linear-gradient(to right, #f44336, #4caf50); /* Default gradient, can be modified in JS */
-}
-
 /* Add some hover effects for better interactivity */
 table tr:hover {
   background-color: #e0f7fa;
@@ -117,6 +105,7 @@ table tr:hover {
 /* Bold scheme names for better visibility */
 td:first-child {
   font-weight: bold;
+  color: white;  /* Scheme name color is white */
 }
 
 /* Add a responsive design to the table */
@@ -149,23 +138,3 @@ td:first-child {
     padding: 8px;
   }
 }
-/* Scheme Name Styling */
-tr td:first-child {
-  background-color: white !important;
-  color: black !important;
-  font-weight: bold;
-}
-
-/* Default Table Row Styling */
-tr {
-  transition: background-color 0.3s ease;
-}
-
-/* Footer Styling */
-footer {
-  text-align: center;
-  padding: 15px 0;
-  background-color: #f1f1f1;
-  font-size: 0.9rem;
-}
-
