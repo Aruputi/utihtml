@@ -54,8 +54,28 @@ async function updateTable() {
   tbody.innerHTML = rowsHTML;
 }
 
+// Function to load the saved month from localStorage
+function loadSelectedMonth() {
+  const savedMonth = localStorage.getItem('selectedMonth');
+  if (savedMonth) {
+    document.getElementById('month').value = savedMonth;
+  }
+}
+
+// Function to save the selected month in localStorage
+function saveSelectedMonth() {
+  const selectedMonth = document.getElementById('month').value;
+  localStorage.setItem('selectedMonth', selectedMonth);
+}
+
 // Add event listener to update the table when the document is fully loaded
-document.addEventListener('DOMContentLoaded', updateTable);
+document.addEventListener('DOMContentLoaded', () => {
+  loadSelectedMonth();  // Load saved month on page load
+  updateTable();         // Update the table with the loaded month
+});
 
 // Optionally, update the table when the month is changed from the dropdown
-document.getElementById('month').addEventListener('change', updateTable);
+document.getElementById('month').addEventListener('change', () => {
+  saveSelectedMonth();  // Save the selected month
+  updateTable();        // Update the table with the new month
+});
