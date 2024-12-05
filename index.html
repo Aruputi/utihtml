@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UTI Mutual Fund Returns</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>UTI Mutual Fund Returns</h1>
+  </header>
+  
+  <main>
+    <div id="filter">
+      <label for="month">Select Month:</label>
+      <select id="month" onchange="updateTable()">
+        <option value="nov24">November 2024</option>
+        <option value="dec24">December 2024</option>
+      </select>
+    </div>
+<div id="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Scheme Name</th>
+        <th colspan="4">SIP Returns</th>
+        <th colspan="4">Lumpsum Returns</th>
+      </tr>
+      <tr>
+        <th>1 Month</th>
+        <th>1 Year</th>
+        <th>2 Years</th>
+        <th>5 Years</th>
+        <th>1 Month</th>
+        <th>1 Year</th>
+        <th>2 Years</th>
+        <th>5 Years</th>
+      </tr>
+    </thead>
+    <tbody id="data-body">
+      <!-- Data rows will be inserted here -->
+    </tbody>
+  </table>
+</div>
+
+
+  </main>
+
+  <footer>
+    <p>Data Source: UTI Mutual Funds</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
