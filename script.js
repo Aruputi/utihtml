@@ -19,6 +19,24 @@ async function fetchCSVData() {
   }
 }
 
+// Function to calculate color based on returns (higher returns = greener)
+function getReturnColor(value) {
+  const returnValue = parseFloat(value);
+
+  if (isNaN(returnValue)) return ''; // If it's not a number, return nothing
+
+  // Map the return values to a color range (Green for positive, Yellow for lower returns)
+  if (returnValue >= 25) {
+    return '#4CAF50'; // Green for higher returns
+  } else if (returnValue >= 15) {
+    return '#8BC34A'; // Light Green for moderate returns
+  } else if (returnValue >= 5) {
+    return '#FFC107'; // Yellow for moderate returns
+  } else {
+    return '#F44336'; // Red for low returns
+  }
+}
+
 // Function to update the table based on the selected month
 async function updateTable() {
   const selectedMonth = document.getElementById('month').value;
@@ -27,31 +45,44 @@ async function updateTable() {
 
   const data = await fetchCSVData();
   
-  if (!data) return; // Return if no data is available
+  if (!data) return;
 
   // Filter data by the selected month
   const filteredData = data.filter(row => row.month === selectedMonth);
 
-  // Prepare rows as HTML strings to batch append for performance
   let rowsHTML = '';
   filteredData.forEach(row => {
+    // Get the highest return to color the entire row
+    const returns = [
+      parseFloat(row.sip_1.replace('%', '')),
+      parseFloat(row.sip_12.replace('%', '')),
+      parseFloat(row.sip_24.replace('%', '')),
+      parseFloat(row.sip_60.replace('%', '')),
+      parseFloat(row.lumpsum_1.replace('%', '')),
+      parseFloat(row.lumpsum_12.replace('%', '')),
+      parseFloat(row.lumpsum_24.replace('%', '')),
+      parseFloat(row.lumpsum_60.replace('%', ''))
+    ];
+
+    const maxReturn = Math.max(...returns);
+    const rowColor = getReturnColor(maxReturn);
+
     rowsHTML += `
-      <tr>
-        <td>${row.scheme_name || 'N/A'}</td>
-        <td>${row.sip_1 || 'N/A'}</td>
-        <td>${row.sip_12 || 'N/A'}</td>
-        <td>${row.sip_24 || 'N/A'}</td>
-        <td>${row.sip_60 || 'N/A'}</td>
-        <td>${row.lumpsum_1 || 'N/A'}</td>
-        <td>${row.lumpsum_12 || 'N/A'}</td>
-        <td>${row.lumpsum_24 || 'N/A'}</td>
-        <td>${row.lumpsum_60 || 'N/A'}</td>
+      <tr class="scheme-row" style="background-color: ${rowColor}">
+        <td style="color: white;">${row.scheme_name || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.sip_1)}">${row.sip_1 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.sip_12)}">${row.sip_12 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.sip_24)}">${row.sip_24 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.sip_60)}">${row.sip_60 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.lumpsum_1)}">${row.lumpsum_1 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.lumpsum_12)}">${row.lumpsum_12 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.lumpsum_24)}">${row.lumpsum_24 || 'N/A'}</td>
+        <td style="background-color: ${getReturnColor(row.lumpsum_60)}">${row.lumpsum_60 || 'N/A'}</td>
       </tr>
     `;
   });
 
-  // Append all rows at once
-  tbody.innerHTML = rowsHTML;
+  tbody.innerHTML = rowsHTML; // Add the rows to the table
 }
 
 // Function to load the saved month from localStorage
@@ -79,128 +110,3 @@ document.getElementById('month').addEventListener('change', () => {
   saveSelectedMonth();  // Save the selected month
   updateTable();        // Update the table with the new month
 });
-// Function to calculate color based on returns (higher returns = greener)
-function getReturnColor(value) {
-  const returnValue = parseFloat(value);
-
-  if (isNaN(returnValue)) return ''; // If it's not a number, return nothing
-
-  // Map the return values to a color range (Green for positive, Red for negative)
-  if (returnValue >= 15) {
-    return '#4CAF50'; // Green for high returns
-  } else if (returnValue >= 5) {
-    return '#8BC34A'; // Light green
-  } else if (returnValue >= 0) {
-    return '#FFC107'; // Yellow for moderate returns
-  } else {
-    return '#F44336'; // Red for negative returns
-  }
-}
-
-// Update the table rows dynamically based on returns
-async function updateTable() {
-  const selectedMonth = document.getElementById('month').value;
-  const tbody = document.getElementById('data-body');
-  tbody.innerHTML = ''; // Clear existing data
-
-  const data = await fetchCSVData();
-  
-  if (!data) return;
-
-  // Filter data by selected month
-  const filteredData = data.filter(row => row.month === selectedMonth);
-
-  let rowsHTML = '';
-  filteredData.forEach(row => {
-    // Color rows based on returns
-    const sip1Color = getReturnColor(row.sip_1);
-    const sip12Color = getReturnColor(row.sip_12);
-    const sip24Color = getReturnColor(row.sip_24);
-    const sip60Color = getReturnColor(row.sip_60);
-    const lumpsum1Color = getReturnColor(row.lumpsum_1);
-    const lumpsum12Color = getReturnColor(row.lumpsum_12);
-    const lumpsum24Color = getReturnColor(row.lumpsum_24);
-    const lumpsum60Color = getReturnColor(row.lumpsum_60);
-
-    rowsHTML += `
-      <tr class="scheme-row" style="background-color: ${sip1Color}">
-        <td>${row.scheme_name || 'N/A'}</td>
-        <td style="background-color: ${sip1Color}">${row.sip_1 || 'N/A'}</td>
-        <td style="background-color: ${sip12Color}">${row.sip_12 || 'N/A'}</td>
-        <td style="background-color: ${sip24Color}">${row.sip_24 || 'N/A'}</td>
-        <td style="background-color: ${sip60Color}">${row.sip_60 || 'N/A'}</td>
-        <td style="background-color: ${lumpsum1Color}">${row.lumpsum_1 || 'N/A'}</td>
-        <td style="background-color: ${lumpsum12Color}">${row.lumpsum_12 || 'N/A'}</td>
-        <td style="background-color: ${lumpsum24Color}">${row.lumpsum_24 || 'N/A'}</td>
-        <td style="background-color: ${lumpsum60Color}">${row.lumpsum_60 || 'N/A'}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = rowsHTML; // Add the rows to the table
-}
-// Function to calculate color based on average return
-function getOverallReturnColor(averageReturn) {
-  if (averageReturn >= 15) {
-    return '#4CAF50'; // Green for high returns
-  } else if (averageReturn >= 5) {
-    return '#8BC34A'; // Light green
-  } else {
-    return '#FFC107'; // Yellow for moderate to low returns
-  }
-}
-
-// Function to update the table based on the selected month
-async function updateTable() {
-  const selectedMonth = document.getElementById('month').value;
-  const tbody = document.getElementById('data-body');
-  tbody.innerHTML = ''; // Clear existing data
-
-  const data = await fetchCSVData();
-  if (!data) return;
-
-  // Filter data by selected month
-  const filteredData = data.filter(row => row.month === selectedMonth);
-
-  let rowsHTML = '';
-  filteredData.forEach(row => {
-    const schemeReturns = [
-      parseFloat(row.sip_1) || 0,
-      parseFloat(row.sip_12) || 0,
-      parseFloat(row.sip_24) || 0,
-      parseFloat(row.sip_60) || 0,
-      parseFloat(row.lumpsum_1) || 0,
-      parseFloat(row.lumpsum_12) || 0,
-      parseFloat(row.lumpsum_24) || 0,
-      parseFloat(row.lumpsum_60) || 0,
-    ];
-
-    // Calculate average return for the scheme
-    const averageReturn = schemeReturns.reduce((a, b) => a + b, 0) / schemeReturns.length;
-
-    // Determine row color based on average return
-    const rowColor = getOverallReturnColor(averageReturn);
-
-    // Add row for the scheme with unified color for all returns
-    rowsHTML += `
-      <tr style="background-color: white; color: black; font-weight: bold;">
-        <td>${row.scheme_name || 'N/A'}</td>
-        <td colspan="8"></td>
-      </tr>
-      <tr style="background-color: ${rowColor}; color: black;">
-        <td>${row.sip_1 || 'N/A'}</td>
-        <td>${row.sip_12 || 'N/A'}</td>
-        <td>${row.sip_24 || 'N/A'}</td>
-        <td>${row.sip_60 || 'N/A'}</td>
-        <td>${row.lumpsum_1 || 'N/A'}</td>
-        <td>${row.lumpsum_12 || 'N/A'}</td>
-        <td>${row.lumpsum_24 || 'N/A'}</td>
-        <td>${row.lumpsum_60 || 'N/A'}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = rowsHTML; // Populate the table
-}
-
-
