@@ -7,12 +7,12 @@ async function fetchCSVData() {
     }
     const csvText = await response.text();
     const parsedData = Papa.parse(csvText, { header: true });
-    
+
     // Log any CSV parsing errors for debugging
     if (parsedData.errors.length > 0) {
       console.error("CSV Parsing Errors:", parsedData.errors);
     }
-    
+
     return parsedData.data;
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -44,7 +44,7 @@ async function updateTable() {
   tbody.innerHTML = ''; // Clear existing data
 
   const data = await fetchCSVData();
-  
+
   if (!data) return;
 
   // Filter data by the selected month
@@ -52,7 +52,7 @@ async function updateTable() {
 
   let rowsHTML = '';
   filteredData.forEach(row => {
-    // Get the highest return to color the entire row
+    // Get all the return values for the scheme
     const returns = [
       parseFloat(row.sip_1.replace('%', '')),
       parseFloat(row.sip_12.replace('%', '')),
@@ -64,20 +64,21 @@ async function updateTable() {
       parseFloat(row.lumpsum_60.replace('%', ''))
     ];
 
+    // Find the maximum return value for coloring the row
     const maxReturn = Math.max(...returns);
-    const rowColor = getReturnColor(maxReturn);
+    const rowColor = getReturnColor(maxReturn); // Color based on the highest return
 
     rowsHTML += `
       <tr class="scheme-row" style="background-color: ${rowColor}">
         <td style="color: white;">${row.scheme_name || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.sip_1)}">${row.sip_1 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.sip_12)}">${row.sip_12 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.sip_24)}">${row.sip_24 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.sip_60)}">${row.sip_60 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.lumpsum_1)}">${row.lumpsum_1 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.lumpsum_12)}">${row.lumpsum_12 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.lumpsum_24)}">${row.lumpsum_24 || 'N/A'}</td>
-        <td style="background-color: ${getReturnColor(row.lumpsum_60)}">${row.lumpsum_60 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.sip_1 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.sip_12 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.sip_24 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.sip_60 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.lumpsum_1 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.lumpsum_12 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.lumpsum_24 || 'N/A'}</td>
+        <td style="background-color: ${rowColor}">${row.lumpsum_60 || 'N/A'}</td>
       </tr>
     `;
   });
